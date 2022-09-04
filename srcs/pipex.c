@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/04 01:40:54 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/04 10:41:55 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 #include "libft_str.h"
 #include "ft_printf.h"
 
-static void	child(char *cmds ,int fd_in, int fd[2])
+static void	child(char *cmds , int fd_in, int pipe_fd[2], t_heredoc heredoc)
 {
 	char		**argv;
 	char		filepath[PATH_MAX + 1];
 	extern char	**environ;
 
-	printf("child process is start\n");
+	printf("child process is start heredoc valid:%d\n", heredoc.valid);
 	argv = ft_split(cmds, ' ');
 	int i = 0;
 	if (argv)
@@ -29,11 +29,12 @@ static void	child(char *cmds ,int fd_in, int fd[2])
 		if (search_path(argv[0], environ, filepath))
 		{
 			dup2(fd_in, 0);
-			dup2(fd[PIPE_OUT], 1);
+			dup2(pipe_fd[PIPE_OUT], 1);
 			printf("filepath:%s, argv[]:%s:%s", filepath, argv[0], argv[1]);
 			execve(filepath , argv, environ);
 			close(fd_in);
-			close(fd[PIPE_IN]);
+			close(pipe_fd[PIPE_IN]);
+			close(pipe_fd[PIPE_OUT]);
 		}
 		//free(argv[i]);
 		i++;
@@ -45,44 +46,56 @@ static void	child(char *cmds ,int fd_in, int fd[2])
 	free(argv);
 }
 
-static void	parent(void)
+static int	handling_error_in_parent(int *pipe_fd)
 {
-	ft_printf("parent process\n");
+	close(pipe_fd[PIPE_IN]);
+	return (-1);
 }
 
-int	pipex (char *cmds, int fd_in, int fd_out)
+static int	parent(int pid, int	*pipe_fd, t_heredoc heredoc)
 {
-	int			pid;
 	int			status;
-	int			pipefd[2];
 
-	ft_printf("cmds=%s, fd_in=%d, fd_out=%d\n", cmds, fd_in, fd_out);
-	if (pipe(pipefd) != 0)
+	/*
+	if (t_heredoc.valid)
+	{
+		get_next_line(pipe_fd[PIPE_IN]);
+	}
+	*/
+	ft_printf("parent process : heredoc valid:%d\n", heredoc.valid);
+	close(pipe_fd[PIPE_OUT]);
+	ft_printf("parent process\n");
+	if (waitpid(pid, &status, 0) < 0)
+		return (handling_error_in_parent(pipe_fd));
+	else if (WIFEXITED(status))
+		ft_printf("exit()\n");
+		//return (handling_error_in_parent(pipe_fd));
+	else if (!WIFSIGNALED(status))
+		return (handling_error_in_parent(pipe_fd));
+	return (pipe_fd[PIPE_IN]);
+}
+
+int	pipex(char *cmds, int fd_in, t_heredoc heredoc)
+{
+	int		pid;
+	int		pipe_fd[2];
+	int		next_fd;
+
+	if (fd_in == -1)
+		return (-1);
+	if (pipe(pipe_fd) != 0)
 		kill_process(0, "pipe() error\n");
 	printf("success pipe()\n");
 	pid = fork();
 	if ((pid) == 0)
 	{
-		child(cmds, fd_in, pipefd);
-		close(pipefd[PIPE_IN]);
-		close(pipefd[PIPE_OUT]);
+		printf("cmds=%s,fd_in:%d/n",cmds,fd_in);
+		child(cmds, fd_in, pipe_fd, heredoc);
 		exit(0);
 	}
 	else
 	{
-		ft_printf("parent process\n");
-		if (waitpid(pid, &status, 0) < 0)
-			kill_process(0, NULL);
-		if (WIFEXITED(status) != 0)
-			printf("child is exit\n");
-		else if (WIFSIGNALED(status))
-			printf("child is end by signal\n");
-
-		//close(pipefd[PIPE_IN]);
-		close(pipefd[PIPE_OUT]);
-		parent();
+		next_fd = parent(pid, pipe_fd, heredoc);
 	}
-	//close(pipefd[PIPE_IN]);
-	//close(pipefd[PIPE_OUT]);
-	return (pipefd[PIPE_IN]);
+	return (next_fd);
 }

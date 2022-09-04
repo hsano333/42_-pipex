@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/04 01:45:19 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/04 10:33:20 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,33 +26,12 @@ void	kill_process(int no, char *message)
 	else if (no == -1)
 	{
 		perror(NULL);
+		exit(EXIT_FAILURE);
 	}
 	errno = no;
-	ft_printf("\n%s:%s\n", strerror(errno), message);
+	if (message)
+		ft_printf("\n%s:%s\n", strerror(errno), message);
 	exit(EXIT_FAILURE);
-}
-
-//int	get_fd(int argc, char **argv, int *fd_in, int *fd_out)
-int	get_fd(int argc, char **argv, int *fd_in)
-{
-	*fd_in = open(argv[1], O_RDONLY);
-	//*fd_out = open(argv[argc - 1], O_WRONLY);
-	printf("get_fd test %s, %s\n",argv[1], argv[argc - 1]);
-	if (*fd_in < 0)
-	{
-		perror(argv[2]);
-		return (false);
-	}
-	/*
-	if (*fd_out < 0)
-	{
-		//close(*fd_in);
-		//perror(argv[argc - 1]);
-		//return (false);
-	}
-	printf("get fd %d:%d\n", *fd_in, *fd_out);
-	*/
-	return (true);
 }
 
 static char	*concat_pathpath(char *filepath, char *env, char *exe)
@@ -92,4 +71,24 @@ char	*search_path(char *exe, char **environ, char *filepath)
 		}
 	}
 	return (NULL);
+}
+
+t_heredoc	is_heredoc(char **argv)
+{
+	t_heredoc	heredoc;
+
+	if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
+	{
+		printf("heredoc is valid\n");
+		heredoc.valid = true;
+		heredoc.limiter = argv[2];
+
+	}
+	else
+	{
+		printf("heredoc is invalid\n");
+		heredoc.valid = false;
+		heredoc.limiter= NULL;
+	}
+	return (heredoc);
 }
