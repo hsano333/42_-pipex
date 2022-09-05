@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 06:49:58 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/05 08:44:37 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ static int	handling_error_in_parent(int *pipe_fd)
 	return (-1);
 }
 
-#define READ_MAX 4096
 
 int	parent(int pid, int	*pipe_fd, t_heredoc heredoc, int *last_pid)
 {
@@ -63,36 +62,39 @@ int	parent(int pid, int	*pipe_fd, t_heredoc heredoc, int *last_pid)
 	int			status;
 	char			buf[READ_MAX];
 	size_t			read_size;
-	//size_t	sum;
+	size_t	sum;
 
 
 	//close(pipe_fd[PIPE_IN]);
 	if (pipe(pipe_fd_p) != 0)
 		kill_process(0, "pipe() error\n");
 	pid_p = fork();
-	//sum = 0;
+	sum = 0;
 	if ((pid_p) == 0)
 	{
 		ft_printf("tmp parent child No.0 \n");
-		close(pipe_fd_p[PIPE_OUT]);
-		while (waitpid(pid, &status, WNOHANG) == 0)
+		//close(pipe_fd_p[PIPE_OUT]);
+		//while (waitpid(pid, &status, WNOHANG) == 0)
+		while (1)
 		{
 			read_size = read(pipe_fd[PIPE_IN], buf, READ_MAX);
-			ft_printf("tmp parent child No.1 read_size=%zu, buf[0]=%c\n", read_size, buf[0]);
+			printf("tmp parent child No.1 read_size=%zu,sum=%zu buf[0]=%c\n", read_size,sum, buf[0]);
 			if (read_size > 0)
 			{
-				//sum = += read_size;
+				sum += read_size;
 				write(pipe_fd_p[PIPE_OUT], buf, read_size);
 			}
 			if (read_size < READ_MAX)
 			{
-				ft_printf("tmp parent child No.2 stop  read_size=%zu, buf[0]=%c\n", read_size, buf[0]);
+				printf("tmp parent child No.2 stop  read_size=%zu,sum=%zu buf[0]=%c\n", read_size,sum, buf[0]);
 				waitpid(pid, &status, 0);
 				break;
 			}
 		}
+		ft_printf("tmp parent child No.3 end \n");
 		close(pipe_fd[PIPE_IN]);
 		close(pipe_fd_p[PIPE_OUT]);
+		exit(1);
 	}
 	else
 	{
@@ -191,13 +193,12 @@ int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid)
 	}
 	else
 	{
-		close(pipe_fd[PIPE_OUT]);
-		//close(pipe_fd[PIPE_IN]);
-		fd_in = pipe_fd[PIPE_IN];
-		*last_pid = pid;
+		//close(pipe_fd[PIPE_OUT]);
+		//fd_in = pipe_fd[PIPE_IN];
+		//*last_pid = pid;
 		//printf("parent last:id=&d\n");
 
-		//fd_in = parent(pid, pipe_fd, heredoc, last_pid);
+		fd_in = parent(pid, pipe_fd, heredoc, last_pid);
 		//next_fd = parent(pid, pipe_fd, heredoc);
 	}
 	

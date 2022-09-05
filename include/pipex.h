@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 06:35:06 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/05 08:49:28 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PIPEX_H
 # define PIPE_IN 0
 # define PIPE_OUT 1
+# define READ_MAX 256
 # define HEREDOC_WORD "here_doc"
 # include <unistd.h>
 # include <sys/stat.h>

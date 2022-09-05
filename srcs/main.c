@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 09:31:44 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 06:58:44 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/05 08:17:13 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int argc, char **argv)
 	int		last_pid;
 	//int			*pid_array;
 	int			status;
+	char		*buf[4096];
 
 	if (argc != 5)
 		kill_process(22, "Argument list size is only four\n");
@@ -35,9 +36,14 @@ int	main(int argc, char **argv)
 	{
 		fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
 	}
-	fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
 	waitpid(last_pid, &status, 0);
+	read(fd_in, buf, 1000);
+	int fd_out = open(argv[argc -1], O_RDONLY);
+	write(fd_out, buf, 1000);
+	//fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
+	//waitpid(last_pid, &status, 0);
 	close(fd_in);
+	close(fd_out);
 	//free(cmds);
 	return (0);
 }
