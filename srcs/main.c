@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 09:31:44 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 08:17:13 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/06 14:52:29 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ int	main(int argc, char **argv)
 	i = 1;
 	while (++i < (argc - 1))
 	{
+		printf("start pipex i:%d, argv[i]=%s\n", i, argv[i]);
 		fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
+		heredoc.valid = false;
 	}
 	waitpid(last_pid, &status, 0);
 	read(fd_in, buf, 1000);

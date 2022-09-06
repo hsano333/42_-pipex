@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 08:47:10 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/06 17:52:38 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ int	main(int argc, char **argv)
 
 	if (argc < 5)
 		kill_process(22, "Argument list size is more than three\n");
-	if ((fd_in = open(argv[1], O_RDONLY)) < 0)
+	heredoc = is_heredoc(argv);
+	if (heredoc.valid == false && (fd_in = open(argv[1], O_RDONLY)) < 0)
 		kill_process(-1, NULL);
 	//cmds = (char **)malloc(sizeof(char *) * (argc - 2));
 	//if (!cmds)
@@ -56,15 +57,25 @@ int	main(int argc, char **argv)
 	//cmds[argc - 3] = NULL;
 	//i = 0;
 	//pid_array = (int *)malloc(sizeof(int *) * argc);
-	heredoc = is_heredoc(argv);
-	if (heredoc.valid)
-		fd_in = 0;
 	i = 1;
+	if (heredoc.valid)
+	{
+		//fd_in = 0;
+		i = 3;
+	}
 	while (++i < (argc - 1))
 	{
+		//i++;
+		//fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
+		//printf("start pipex i:%d, argv[i]=%s\n", i, argv[i]);
+		printf("start pipex i:%d, argv[i]=%s\n", i, argv[0]);
 		fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
+		//heredoc.valid = false;
 	}
-	fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
+	//fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
+	last_pid = 0;
+	printf("start pipex i:%d, last_pid=%d\n", i, last_pid);
+		//fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
 	write_file(fd_in, argv[argc - 1]);
 	//waitpid(last_pid, &status, 0);
 	/*

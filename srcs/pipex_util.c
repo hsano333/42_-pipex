@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/04 10:33:20 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/05 09:33:50 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ t_heredoc	is_heredoc(char **argv)
 		printf("heredoc is valid\n");
 		heredoc.valid = true;
 		heredoc.limiter = argv[2];
-
 	}
 	else
 	{

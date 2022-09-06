@@ -6,14 +6,76 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 08:44:37 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/06 18:09:28 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include "get_next_line.h"
 #include "libft_str.h"
 #include "ft_printf.h"
 #include <sys/wait.h>
+#define SHADOW_FILE "pipex_shadow_file.txt"
+
+int	heredoc_input(t_heredoc heredoc)
+{
+	int	pid;
+	int	pipe_fd[2];
+	char	*line;
+	int	fd;
+	int	status;
+
+	if (pipe(pipe_fd) != 0)
+		kill_process(0, "pipe() error\n");
+	//fd = 10;
+	//if (fd < 0)
+		//return ;
+	pid = fork();
+	if (pid == 0)
+	{
+		close(pipe_fd[PIPE_IN]);
+		//close(pipe_fd[PIPE_IN]);
+		int i = 0;
+		fd = open(SHADOW_FILE, (O_RDWR | O_CREAT), 0664);
+		while(1)
+		{
+			//printf("input start i=%d\n",i);
+			i++;
+			//close(1);
+			//dup2(pipe_fd[PIPE_OUT], 1);
+			line = get_next_line(0);
+			printf("heredoc input line=%s\n", line);
+			//line = malloc(1000);
+
+			//line[0] = 'a';
+			//line[100] = 0;
+			//printf("child line=%s\n", line);
+			write(fd,line, ft_strlen(line));
+			printf("heredoc input:line=%s\n",line);
+			if (ft_strncmp(line, heredoc.limiter, ft_strlen(heredoc.limiter)) == 0)
+			{
+				printf("heredoc child is exit()\n");
+				printf("heredoc child is exit()\n");
+				printf("heredoc child is exit()\n");
+				close(fd);
+				close(0);
+				exit(1);
+			}
+			else if (line)
+				write(pipe_fd[PIPE_OUT], line, ft_strlen(line));
+			free(line);
+		}
+	}
+	else
+	{
+		close(pipe_fd[PIPE_OUT]);
+		waitpid(pid, &status, 0);
+	}
+	printf("end heredoc!!!!!!!!!!!!!!!!!!!!!!!! \n");
+	return (pipe_fd[PIPE_IN]);
+
+
+}
 
 static void	child(char *cmds , int fd_in, int pipe_fd[2], t_heredoc heredoc)
 {
@@ -37,7 +99,6 @@ static void	child(char *cmds , int fd_in, int pipe_fd[2], t_heredoc heredoc)
 			dup2(pipe_fd[PIPE_OUT], 1);
 			execve(filepath , argv, environ);
 			close(pipe_fd[PIPE_OUT]);
-			close(fd_in);
 		}
 		i++;
 	}
@@ -46,6 +107,7 @@ static void	child(char *cmds , int fd_in, int pipe_fd[2], t_heredoc heredoc)
 	while (argv[i])
 		free(argv[i++]);
 	free(argv);
+	close(fd_in);
 }
 
 static int	handling_error_in_parent(int *pipe_fd)
@@ -84,7 +146,7 @@ int	parent(int pid, int	*pipe_fd, t_heredoc heredoc, int *last_pid)
 				sum += read_size;
 				write(pipe_fd_p[PIPE_OUT], buf, read_size);
 			}
-			if (read_size < READ_MAX)
+			if (read_size == 0)
 			{
 				printf("tmp parent child No.2 stop  read_size=%zu,sum=%zu buf[0]=%c\n", read_size,sum, buf[0]);
 				waitpid(pid, &status, 0);
@@ -162,8 +224,7 @@ int	parent(int pid, int	*pipe_fd, t_heredoc heredoc, int *last_pid)
 		return (handling_error_in_parent(pipe_fd));
 	ft_printf("loop end No2\n");
 	ft_printf("parent tempo write?: sum=%d:buf[0]:=%c%c\n",sum, buf[0],buf[1]);
-	if (sum > 0) { 
-		ft_printf("parent tempo write?: sum=%d:buf[0]:=%c%c\n",sum, buf[0],buf[1]);
+	if (sum > 0) { ft_printf("parent tempo write?: sum=%d:buf[0]:=%c%c\n",sum, buf[0],buf[1]);
 		dup2(pipe_fd[PIPE_OUT], 1);
 		write(pipe_fd[PIPE_OUT], buf, sum);
 	}
@@ -177,31 +238,64 @@ int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid)
 {
 	int		pid;
 	int		pipe_fd[2];
-	//int		next_fd;
+	int		status;
 
+	ft_printf("test No.3\n");
 	if (fd_in == -1)
 		return (-1);
+	ft_printf("test No.4\n");
 	if (pipe(pipe_fd) != 0)
 		kill_process(0, "pipe() error\n");
-	ft_printf("success pipe()\n");
+	ft_printf("test No.5\n");
 	pid = fork();
+	ft_printf("test No.6\n");
+	printf("No.0 first pid=%d\n", pid);
 	if ((pid) == 0)
 	{
-		ft_printf("cmds=%s,fd_in:%d/n",cmds, fd_in);
+		if (heredoc.valid)
+		{
+			heredoc.valid = false;
+			printf("heredoc start\n");
+			fd_in = heredoc_input(heredoc);
+		}
+		printf("next heredoc child\n");
+		
+		//int i = 0;
+		//while(1)
+		//{
+			//i++;
+		//}
 		child(cmds, fd_in, pipe_fd, heredoc);
 		exit(0);
 	}
 	else
 	{
-		//close(pipe_fd[PIPE_OUT]);
-		//fd_in = pipe_fd[PIPE_IN];
-		//*last_pid = pid;
-		//printf("parent last:id=&d\n");
+		while (1)
+		{
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status) == true)
+			{
+				break;
+				//break ;
+			}
+			else if (WIFSIGNALED(status) == true)
+			{
+				printf("signal exit is error?: status=%d\n", WEXITSTATUS(status));
+				usleep(50000000);
+				//ft_printf("brea No.2status=%d\n",status);
+				//break ;
+			}
+			//if (WIFSTOPPED(status) == false)
+			//{
+				//ft_printf("proces is die\nerorr !!!!!!!!!!!!!!!!!!!!!!!\n");
 
+			//}
+
+		}
+
+		printf("next heredoc parent\n");
+		//child(cmds, fd_in, pipe_fd, heredoc);
 		fd_in = parent(pid, pipe_fd, heredoc, last_pid);
-		//next_fd = parent(pid, pipe_fd, heredoc);
 	}
-	
-	//*last_pid = pid_p;
 	return (fd_in);
 }
