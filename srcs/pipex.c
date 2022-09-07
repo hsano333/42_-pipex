@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/06 18:09:28 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/07 03:41:49 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,14 +139,16 @@ int	parent(int pid, int	*pipe_fd, t_heredoc heredoc, int *last_pid)
 		//while (waitpid(pid, &status, WNOHANG) == 0)
 		while (1)
 		{
+			printf("tmp parent child No.0 \n");
 			read_size = read(pipe_fd[PIPE_IN], buf, READ_MAX);
 			printf("tmp parent child No.1 read_size=%zu,sum=%zu buf[0]=%c\n", read_size,sum, buf[0]);
 			if (read_size > 0)
 			{
 				sum += read_size;
 				write(pipe_fd_p[PIPE_OUT], buf, read_size);
+				printf("tmp parent child write end No.1-1 read_size=%zu,sum=%zu buf[0]=%s\n", read_size,sum, buf);
 			}
-			if (read_size == 0)
+			if (read_size < READ_MAX)
 			{
 				printf("tmp parent child No.2 stop  read_size=%zu,sum=%zu buf[0]=%c\n", read_size,sum, buf[0]);
 				waitpid(pid, &status, 0);

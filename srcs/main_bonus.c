@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/06 17:52:38 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/07 03:57:25 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,18 +61,18 @@ int	main(int argc, char **argv)
 	if (heredoc.valid)
 	{
 		//fd_in = 0;
-		i = 3;
+		i = 2;
 	}
 	while (++i < (argc - 1))
 	{
 		//i++;
 		//fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
 		//printf("start pipex i:%d, argv[i]=%s\n", i, argv[i]);
-		printf("start pipex i:%d, argv[i]=%s\n", i, argv[0]);
+		printf("start pipex i:%d, argv[i]=%s\n", i, argv[i]);
 		fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
-		//heredoc.valid = false;
+		heredoc.valid = false;
 	}
-	//fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
+	fd_in = pipex("tee test_tee.txt", fd_in, heredoc, &last_pid);
 	last_pid = 0;
 	printf("start pipex i:%d, last_pid=%d\n", i, last_pid);
 		//fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
