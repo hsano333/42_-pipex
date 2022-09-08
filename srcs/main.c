@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 09:31:44 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/06 14:52:29 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/07 13:27:55 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@
 int	main(int argc, char **argv)
 {
 	int			fd_in;
-	//char		**cmds;
 	int			i;
 	t_heredoc	heredoc;
 	int		last_pid;
-	//int			*pid_array;
 	int			status;
 	char		*buf[4096];
 
@@ -28,8 +26,6 @@ int	main(int argc, char **argv)
 		kill_process(22, "Argument list size is only four\n");
 	if ((fd_in = open(argv[1], O_RDONLY)) < 0)
 		kill_process(0, NULL);
-
-	//pid_array = (int *)malloc(sizeof(int *) * argc);
 	heredoc.valid = false;
 	i = 1;
 	while (++i < (argc - 1))

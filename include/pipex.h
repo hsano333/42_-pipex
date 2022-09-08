@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/05 08:49:28 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/07 17:31:25 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <string.h>
 # include <stdbool.h>
 # include <limits.h>
+# include <sys/wait.h>
 
 typedef struct s_heredoc{
 	int		valid;
@@ -37,4 +38,5 @@ char		*search_path(char *exe, char **environ, char *filepath);
 //int			pipex (char *cmds, int fd_in, t_heredoc heredoc);
 int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid);
 t_heredoc	is_heredoc(char **argv);
+int	heredoc_input(t_heredoc heredoc);
 #endif
