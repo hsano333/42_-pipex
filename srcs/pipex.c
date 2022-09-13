@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 12:39:02 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/13 07:19:04 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,22 +96,29 @@ int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid)
 	int		pipe_fd[2];
 	int		status;
 
-	if (fd_in == -1)
+	printf("pipex No.1\n");
+	if (fd_in == -1 && heredoc.valid == false)
 		return (-1);
+	printf("pipex No.2\n");
 	if (pipe(pipe_fd) != 0)
 		kill_process(0, "pipe() error\n");
+	printf("pipex No.3\n");
 	pid = fork();
 	if ((pid) == 0)
 	{
+		printf("pipex No.4\n");
 		if (heredoc.valid)
 			fd_in = heredoc_input(heredoc);
+		printf("pipex No.5\n");
 		child(cmds, fd_in, pipe_fd);
 		exit(0);
 	}
 	else
 	{
+		printf("pipex No.6\n");
 		if (heredoc.valid)
 		{
+			printf("pipex No.7\n");
 			while (1)
 			{
 				waitpid(pid, &status, 0);
@@ -119,7 +126,9 @@ int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid)
 					break ;
 			}
 		}
+		printf("pipex No.8\n");
 		fd_in = parent(pid, pipe_fd, last_pid);
 	}
+	printf("pipex No.9\n");
 	return (fd_in);
 }

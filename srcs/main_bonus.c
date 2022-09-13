@@ -6,13 +6,28 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 12:49:37 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/13 08:17:37 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "libft_str.h"
 #include <sys/wait.h>
+
+#include <unistd.h>
+
+int test(void) {
+    char *file = "/bin/echo";
+    char *const args[] = {"/bin/echo",  "echo Hello $ENV!", "$PATH", NULL};
+    char *const env[] = {"ENV=World", NULL};
+
+    printf("echo sanmple\n");
+    execve(file, args, env);
+    //execv(file, args);
+
+    return 0;
+}
+
 
 void	write_file(int fd_in, char *filename)
 {
@@ -21,6 +36,7 @@ void	write_file(int fd_in, char *filename)
 	int			k;
 	char		buf[READ_MAX];
 	extern char	**environ;
+
 
 	k = 0;
 	while (environ[k])
@@ -48,6 +64,9 @@ int	main(int argc, char **argv)
 	char		tee_cmd[1024 + 10];
 	t_heredoc	heredoc;
 
+
+	test();
+	return 0;
 	if (argc < 5)
 		kill_process(22, "Argument list size is more than three\n");
 	heredoc = is_heredoc(argv);
