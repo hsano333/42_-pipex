@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 19:08:28 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/14 21:48:45 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 typedef struct s_heredoc{
 	int		valid;
+	int		valid_backup;
 	char	*limiter;
 }	t_heredoc;
 

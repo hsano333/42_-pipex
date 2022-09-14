@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 21:00:12 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/14 21:49:30 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,15 @@ int test(void) {
 }
 
 
-void	write_file(int fd_in, char *filename)
+void	write_file(int fd_in, char *filename, t_heredoc heredoc)
 {
 	int			fd_out; int			read_size;
 	//int			k;
 	char		buf[READ_MAX];
+	int		option;
+	mode_t		mode;
 	//extern char	**environ;
+	mode = 0777;
 
 
 	/*
@@ -45,7 +48,32 @@ void	write_file(int fd_in, char *filename)
 		k++;
 	}
 	*/
-	fd_out = open(filename, O_WRONLY);
+	if (heredoc.valid_backup)
+	{
+		printf("heredoc No.1\n");
+		option = O_WRONLY | O_APPEND;
+	}
+	else
+	{
+		printf("heredoc No.2\n");
+		option = O_WRONLY | O_CREAT | O_TRUNC;
+	}
+	printf("No.3 option=%d\n", option);
+	fd_out = open(filename, option, mode);
+	printf("No.1 fd_out=%d\n", fd_out);
+	if (fd_out < 0)
+	{
+		if (heredoc.valid)
+		{
+			option = O_WRONLY | O_CREAT;
+			fd_out = open(filename, option, mode);
+			printf(" remake No.2 fd_out=%d\n", fd_out);
+
+		}
+		if (fd_out < 0)
+			kill_process(-1, filename);
+
+	}
 	printf("write file=%s , fd_out=%d\n",filename, fd_out);
 	write(fd_out, "write_start\n", 12);
 
@@ -97,7 +125,7 @@ int	main(int argc, char **argv)
 	//fd_i++;
 	printf("tee end, fdpid[fd_i].fd=%d\n", fdpid[fd_i].fd);
 	//fdpid[fd_i] = pipex(tee_cmd, fdpid[fd_i - 1].fd, heredoc);
-	write_file(fdpid[fd_i].fd, "write_test.txt");
+	write_file(fdpid[fd_i].fd, "write_test.txt", heredoc);
 	printf("waitpid test No.1\n");
 	char *last="last waitpid\n";
 	write(2, last, ft_strlen(last)); 

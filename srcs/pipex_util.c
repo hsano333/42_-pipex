@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 12:39:20 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/14 21:49:15 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	kill_process(int no, char *message)
 	}
 	else if (no == -1)
 	{
-		perror(NULL);
+		perror(message);
 		exit(EXIT_FAILURE);
 	}
 	errno = no;
@@ -80,11 +80,13 @@ t_heredoc	is_heredoc(char **argv)
 	if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
 	{
 		heredoc.valid = true;
+		heredoc.valid_backup = true;
 		heredoc.limiter = argv[2];
 	}
 	else
 	{
 		heredoc.valid = false;
+		heredoc.valid_backup = false;
 		heredoc.limiter = NULL;
 	}
 	return (heredoc);
