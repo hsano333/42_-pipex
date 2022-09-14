@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 07:59:20 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/13 09:35:57 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ static void	child_echo(int fd, char *echo_path, char **argv, char **environ)
 
        */
 
-	printf("path=%s, fd=%d, argv[0]=%s, [1]=%s, [2]=%s,\n",echo_path, fd, argv[0], argv[1], argv[2]);
+	//printf("path=%s, fd=%d, argv[0]=%s, [1]=%s, [2]=%s,\n",echo_path, fd, argv[0], argv[1], argv[2]);
 	pid = fork();
 	if (pid == 0)
 	{
-		//close(1);
-		//dup2(fd, 1);
+		close(1);
+		dup2(fd, 1);
 		execve(echo_path, argv, environ);
 		exit(0);
 	}
@@ -45,14 +45,15 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc heredoc)
 {
 	int			fd;
 	char		*line;
-	char		*argv[4];
+	char		*argv[6];
 	char		echo_path[128];
 	extern char	**environ;
 
-	if (search_path("echo", environ, echo_path) == NULL)
+	if (search_path("bash", environ, echo_path) == NULL)
 		kill_process(0, "Error:don't find echo\n");
-	argv[0] = "echo";
-	argv[1] = "-n";
+	argv[0] = "bash";
+	argv[1] = "-c";
+	//argv[2] = "echo";
 	argv[3] = NULL;
 	close(pipe_fd[PIPE_IN]);
 	fd = open(SHADOW_FILE, (O_RDWR | O_CREAT), 0664);
@@ -61,7 +62,10 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc heredoc)
 	while (1)
 	{
 		line = get_next_line(0);
-		argv[2] = line;
+		char *lin2 = malloc(ft_strlen(line) + 10);
+		ft_strlcpy(lin2, "echo ", 10);
+		ft_strlcat(lin2, line, ft_strlen(line) + 10);
+		argv[2] = lin2;
 		if (ft_strncmp(line, heredoc.limiter, ft_strlen(heredoc.limiter)) == 0)
 		{
 			close(fd);
@@ -90,6 +94,7 @@ int	heredoc_input(t_heredoc heredoc)
 	}
 	else
 	{
+		close(pipe_fd[PIPE_OUT]);
 		while (1)
 		{
 			waitpid(pid, &status, 0);
@@ -98,6 +103,5 @@ int	heredoc_input(t_heredoc heredoc)
 		}
 	}
 	printf("heredoc end parend\n");
-	close(pipe_fd[PIPE_OUT]);
 	return (pipe_fd[PIPE_IN]);
 }

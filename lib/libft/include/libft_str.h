@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 14:53:05 by hsano             #+#    #+#             */
-/*   Updated: 2022/08/26 14:33:15 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/14 19:05:54 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,4 @@ size_t	ft_strlen(const char *s);
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char	*ft_ltoa(long n, char *p);
-float	ft_atof(const char *str, int *error);
 #endif

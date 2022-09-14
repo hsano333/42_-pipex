@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/08 23:18:43 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/14 19:08:28 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,17 @@ typedef struct s_heredoc{
 	char	*limiter;
 }	t_heredoc;
 
+typedef struct s_fdpid{
+	int		fd;
+	int		pid;
+}	t_fdpid;
+
 void		kill_process(int no, char *message);
 char		*search_path(char *exe, char **environ, char *filepath);
 //int			pipex (char *cmds, int fd_in, t_heredoc heredoc);
-int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid);
+//int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid);
+//int	pipex(char *cmds, int fd_in, t_heredoc heredoc);
+t_fdpid	pipex(char *cmds, int fd_in, t_heredoc heredoc);
 t_heredoc	is_heredoc(char **argv);
 int	heredoc_input(t_heredoc heredoc);
 #endif
