@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 21:49:30 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 06:51:22 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ void	write_file(int fd_in, char *filename, t_heredoc heredoc)
 
 	}
 	printf("write file=%s , fd_out=%d\n",filename, fd_out);
-	write(fd_out, "write_start\n", 12);
-
 	while (1)
 	{
 		read_size = read(fd_in, buf, READ_MAX);
@@ -125,7 +123,7 @@ int	main(int argc, char **argv)
 	//fd_i++;
 	printf("tee end, fdpid[fd_i].fd=%d\n", fdpid[fd_i].fd);
 	//fdpid[fd_i] = pipex(tee_cmd, fdpid[fd_i - 1].fd, heredoc);
-	write_file(fdpid[fd_i].fd, "write_test.txt", heredoc);
+	write_file(fdpid[fd_i].fd, argv[argc - 1], heredoc);
 	printf("waitpid test No.1\n");
 	char *last="last waitpid\n";
 	write(2, last, ft_strlen(last)); 
