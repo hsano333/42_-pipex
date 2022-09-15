@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:48:25 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:55:49 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,8 @@ char	*search_path(char *exe, char **environ, char *filepath)
 	size_t	j;
 	char	**tmp_paths;
 	char	*tmp;
-	int	break_flag;
 
 	i = 0;
-	break_flag = false;
 	while (environ[i])
 	{
 		tmp = ft_strchr(environ[i++], '=');
@@ -66,14 +64,14 @@ char	*search_path(char *exe, char **environ, char *filepath)
 		j = 0;
 		while (tmp_paths[j])
 		{
-			filepath = concat_pathpath(filepath, tmp_paths[j], exe);
+			filepath = concat_pathpath(filepath, tmp_paths[j++], exe);
 			if (!access(filepath, X_OK))
-				break_flag = true;
-			j++;
+			{
+				ft_free_split(tmp_paths);
+				return filepath;
+			}
 		}
 		ft_free_split(tmp_paths);
-		if (break_flag)
-			return (filepath);
 	}
 	return (NULL);
 }
