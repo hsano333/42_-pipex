@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 20:04:12 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 20:13:21 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,23 +59,16 @@ int	check_arg(int argc, char **argv, t_fdpid* fdpid, t_heredoc *heredoc)
 
 	fd_i = 0;
 	i = 2;
-	printf("argc No.1\n");
 	if (argc < 5)
 		kill_process(22, "Argument list size is more than three\n");
-	printf("argc No.2\n");
 	*heredoc = is_heredoc(argv);
-	printf("argc No.3\n");
 	fdpid[fd_i].fd = open(argv[1], O_RDONLY);
-	printf("argc No.4\n");
 	if (heredoc->valid == false && fdpid[fd_i].fd < 0)
 		kill_process(-1, argv[1]);
-	printf("argc No.5\n");
 	if (heredoc->valid)
 		i++;
-	printf("argc No.6\n");
 	if (!check_valid_commands(argc, argv, &i))
 		kill_process(22, argv[i]);
-	printf("argc No.7\n");
 	return (fd_i);
 }
 
@@ -87,17 +80,12 @@ int 	main_child(int argc, char **argv)
 	t_heredoc	heredoc;
 	int			status;
 
-	printf("main child No.1\n");
 	fd_i = check_arg(argc, argv, fdpid, &heredoc);
-	printf("main child No.2\n");
 	i = 1;
 	while (++i < (argc - 1))
 	{
 		fd_i++;
-		printf("main child No.3\n");
 		fdpid[fd_i] = pipex(argv[i], fdpid[fd_i - 1].fd, heredoc);
-		printf("main child No.4\n");
-		printf(" mainchild No.1 fdpid[fd_i]=%d\n", fdpid[fd_i].pid);
 		if (fdpid[fd_i].pid == -1)
 			kill_process(-1, "pipex error No.1");
 		heredoc.valid = false;

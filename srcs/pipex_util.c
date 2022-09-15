@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 19:52:25 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 20:12:54 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,26 +83,20 @@ int	check_valid_commands(int argc, char **argv, int *i)
 	char		filepath[PATH_MAX + 1];
 	int		error;
 
-	printf("check_valid_commands No.1\n");
 	while(*i < argc - 1)
 	{
 		error = false;
 		split = ft_split(argv[(*i)++], ' ');
-		printf("check_valid_commands No.2\n");
 		if (split)
 		{
-			printf("check_valid_commands No.3 split[0]=%s\n",split[0]);
 			if (search_path(split[0], environ, filepath) == NULL)
 				error = true;
-			printf("check_valid_commands No.4 error=%d, filepath=%s\n", error,filepath);
 		}
 		else
 			error = true;
-		printf("check_valid_commands No.5 error=%d\n", error);
 		ft_free_split(split);
 		if (error)
 			return (false);
-		printf("check_valid_commands No.6 error=%d\n", error);
 	}
 	return (true);
 }
