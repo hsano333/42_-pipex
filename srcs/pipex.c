@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 07:37:58 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:35:29 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,7 @@ static void	child(char *cmds, int fd_in, int pipe_fd[2])
 		}
 	}
 	printf("pipex child No.4\n");
-	i = 0;
-	while (argv[i])
-		free(argv[i++]);
-	printf("pipex child No.5\n");
-	free(argv);
+	ft_free_split(argv);
 	close(fd_in);
 }
 

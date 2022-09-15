@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 21:49:15 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:37:26 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,10 @@ char	*search_path(char *exe, char **environ, char *filepath)
 	size_t	j;
 	char	**tmp_paths;
 	char	*tmp;
+	int	break_flag;
 
 	i = 0;
+	break_flag = false;
 	while (environ[i])
 	{
 		tmp = ft_strchr(environ[i++], '=');
@@ -66,9 +68,13 @@ char	*search_path(char *exe, char **environ, char *filepath)
 		{
 			filepath = concat_pathpath(filepath, tmp_paths[j], exe);
 			if (!access(filepath, X_OK))
-				return (filepath);
+				break_flag = true;
+			}
 			j++;
 		}
+		ft_free_split(tmp_paths);
+		if (break_flag)
+			return (filepath);
 	}
 	return (NULL);
 }
@@ -90,4 +96,30 @@ t_heredoc	is_heredoc(char **argv)
 		heredoc.limiter = NULL;
 	}
 	return (heredoc);
+}
+
+int	check_valid_commands(int argc, char **argv, int *i)
+{
+	extern char	**environ;
+	char		**split;
+	char		filepath[PATH_MAX + 1];
+	size_t		j;
+	int		error;
+
+	while(*i < argc)
+	{
+		error = false;
+		split = ft_split(argv[(*i)++], ' ');
+		if (split)
+		{
+			if (!search_path(split[0], environ, filepath))
+				error = true;
+		}
+		else
+			error = true;
+		free_split(split);
+		if (error)
+			return (false);
+	}
+	return (true);
 }
