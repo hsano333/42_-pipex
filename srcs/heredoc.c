@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 09:35:57 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 07:40:39 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,12 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc heredoc)
 	}
 }
 
-int	heredoc_input(t_heredoc heredoc)
+t_fdpid	heredoc_input(t_heredoc heredoc)
 {
 	int	pid;
 	int	pipe_fd[2];
-	int	status;
+	//int	status;
+	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd) != 0)
 		kill_process(0, "pipe() error\n");
@@ -94,14 +95,17 @@ int	heredoc_input(t_heredoc heredoc)
 	}
 	else
 	{
+		fdpid.pid = pid;
+		fdpid.fd = pipe_fd[PIPE_IN];
+		printf("heredoc No.1 end pid=%d, fd=%d\n",fdpid.pid, fdpid.fd );
 		close(pipe_fd[PIPE_OUT]);
-		while (1)
-		{
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status) == true)
-				break ;
-		}
+		//while (1)
+		//{
+			//waitpid(pid, &status, 0);
+			//if (WIFEXITED(status) == true)
+				//break ;
+		//}
 	}
 	printf("heredoc end parend\n");
-	return (pipe_fd[PIPE_IN]);
+	return (fdpid);
 }

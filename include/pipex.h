@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 21:48:45 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 07:36:42 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,5 @@ char		*search_path(char *exe, char **environ, char *filepath);
 //int	pipex(char *cmds, int fd_in, t_heredoc heredoc);
 t_fdpid	pipex(char *cmds, int fd_in, t_heredoc heredoc);
 t_heredoc	is_heredoc(char **argv);
-int	heredoc_input(t_heredoc heredoc);
+t_fdpid	heredoc_input(t_heredoc heredoc);
 #endif

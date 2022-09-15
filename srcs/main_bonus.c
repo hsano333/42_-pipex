@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 06:51:22 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 07:52:38 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	write_file(int fd_in, char *filename, t_heredoc heredoc)
 	printf("No.1 fd_out=%d\n", fd_out);
 	if (fd_out < 0)
 	{
-		if (heredoc.valid)
+		if (heredoc.valid_backup)
 		{
 			option = O_WRONLY | O_CREAT;
 			fd_out = open(filename, option, mode);
@@ -105,8 +105,14 @@ int	main(int argc, char **argv)
 	if (heredoc.valid == false && fdpid[fd_i].fd < 0)
 		kill_process(-1, NULL);
 	i = 1;
+	/*
 	if (heredoc.valid)
+	{
+		fd_i++;
+		fdpid[fd_i] = pipex(argv[i], fdpid[fd_i - 1].fd, heredoc);
 		i++;
+	}
+	*/
 	while (++i < (argc - 1))
 	{
 		fd_i++;
@@ -125,10 +131,11 @@ int	main(int argc, char **argv)
 	//fdpid[fd_i] = pipex(tee_cmd, fdpid[fd_i - 1].fd, heredoc);
 	write_file(fdpid[fd_i].fd, argv[argc - 1], heredoc);
 	printf("waitpid test No.1\n");
-	char *last="last waitpid\n";
-	write(2, last, ft_strlen(last)); 
+	printf("last end_i=%d, fd_i=%d\n", end_i, fd_i);
 	while(end_i <= fd_i)
 	{
+		char *last="last waitpid\n\n";
+		write(2, last, ft_strlen(last)); 
 		status = 1;
 		printf("last wait pid=%d,satus=%d\n", fdpid[end_i].pid, status);
 		//write(2, last, ft_strlen(last)); 

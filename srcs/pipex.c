@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/14 20:54:47 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 07:37:58 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,30 +144,38 @@ t_fdpid	pipex(char *cmds, int fd_in, t_heredoc heredoc)
 		s1 = "pipex No.4\n";
 		write(1,s1, ft_strlen(s1));
 		printf("pipex No.4\n");
-		if (heredoc.valid)
-			fd_in = heredoc_input(heredoc);
+		//if (heredoc.valid)
+			//fd_in = heredoc_input(heredoc);
+		//else
+		if (heredoc.valid == false)
+			child(cmds, fd_in, pipe_fd);
 		printf("pipex No.5\n");
-		child(cmds, fd_in, pipe_fd);
 		exit(0);
 	}
 	else
 	{
 		printf("pipex No.6\n");
+		close(pipe_fd[PIPE_OUT]);
 		if (heredoc.valid)
 		{
+			fdpid = heredoc_input(heredoc);
 			status=1;
 			printf("pipex No.7:%d\n",status);
+			/*
 			while (1)
 			{
 				waitpid(pid, &status, 0);
 				if (WIFEXITED(status) == true)
 					break ;
 			}
+			*/
 		}
-		printf("pipex No.8\n");
-		close(pipe_fd[PIPE_OUT]);
-		fdpid = parent(pid, pipe_fd);
-		fdpid.pid = pid;
+		else 
+		{
+			fdpid = parent(pid, pipe_fd);
+			printf("pipex No.8\n");
+			fdpid.pid = pid;
+		}
 		//fdpid.fd = pipe_fd[PIPE_IN];
 		//fdpid.pid = pid;
 	}
