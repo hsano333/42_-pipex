@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 08:59:02 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 20:04:12 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,49 +59,76 @@ int	check_arg(int argc, char **argv, t_fdpid* fdpid, t_heredoc *heredoc)
 
 	fd_i = 0;
 	i = 2;
-	printf("check_arg No.1\n");
+	printf("argc No.1\n");
 	if (argc < 5)
 		kill_process(22, "Argument list size is more than three\n");
-	printf("check_arg No.2\n");
+	printf("argc No.2\n");
 	*heredoc = is_heredoc(argv);
+	printf("argc No.3\n");
 	fdpid[fd_i].fd = open(argv[1], O_RDONLY);
-	printf("check_arg No.3\n");
+	printf("argc No.4\n");
 	if (heredoc->valid == false && fdpid[fd_i].fd < 0)
 		kill_process(-1, argv[1]);
-	printf("check_arg No.4\n");
+	printf("argc No.5\n");
 	if (heredoc->valid)
 		i++;
-	printf("check_arg No.5\n");
+	printf("argc No.6\n");
 	if (!check_valid_commands(argc, argv, &i))
 		kill_process(22, argv[i]);
-	printf("check_arg No.6\n");
+	printf("argc No.7\n");
 	return (fd_i);
 }
 
-int	main(int argc, char **argv)
+int 	main_child(int argc, char **argv)
 {
 	int			fd_i;
 	int			i;
 	t_fdpid			fdpid[4096];
 	t_heredoc	heredoc;
+	int			status;
 
+	printf("main child No.1\n");
 	fd_i = check_arg(argc, argv, fdpid, &heredoc);
+	printf("main child No.2\n");
 	i = 1;
 	while (++i < (argc - 1))
 	{
 		fd_i++;
-		printf("fd_i=%d, fdpid[fd_i-1]=%d\n", fd_i, fdpid[fd_i - 1].fd);
+		printf("main child No.3\n");
 		fdpid[fd_i] = pipex(argv[i], fdpid[fd_i - 1].fd, heredoc);
-		printf("return fdpid=%d\n", fdpid[fd_i].fd);
+		printf("main child No.4\n");
+		printf(" mainchild No.1 fdpid[fd_i]=%d\n", fdpid[fd_i].pid);
+		if (fdpid[fd_i].pid == -1)
+			kill_process(-1, "pipex error No.1");
 		heredoc.valid = false;
 	}
-	int end_i = 1;
-	int status = 0;
 	write_file(fdpid[fd_i].fd, argv[argc - 1], heredoc);
-	while(end_i <= fd_i)
+	i = 0;
+	while(++i <= fd_i)
 	{
-		waitpid(fdpid[end_i].pid, &status, 0);
-		end_i++;
+		waitpid(fdpid[i].pid, &status, 0);
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0) 
+			kill_process(-1, "pipex error No.2");
 	}
+	exit(0);
+}
+
+int	main(int argc, char **argv)
+{
+	int	pid;
+	int	status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		main_child(argc, argv);
+		exit(0);
+	}
+	else if (pid == -1)
+		kill_process(-1, NULL);
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) 
+		kill_process(0, NULL);
+
 	return (0);
 }

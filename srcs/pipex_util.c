@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:55:49 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 19:52:25 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,25 +76,6 @@ char	*search_path(char *exe, char **environ, char *filepath)
 	return (NULL);
 }
 
-t_heredoc	is_heredoc(char **argv)
-{
-	t_heredoc	heredoc;
-
-	if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
-	{
-		heredoc.valid = true;
-		heredoc.valid_backup = true;
-		heredoc.limiter = argv[2];
-	}
-	else
-	{
-		heredoc.valid = false;
-		heredoc.valid_backup = false;
-		heredoc.limiter = NULL;
-	}
-	return (heredoc);
-}
-
 int	check_valid_commands(int argc, char **argv, int *i)
 {
 	extern char	**environ;
@@ -102,20 +83,26 @@ int	check_valid_commands(int argc, char **argv, int *i)
 	char		filepath[PATH_MAX + 1];
 	int		error;
 
-	while(*i < argc)
+	printf("check_valid_commands No.1\n");
+	while(*i < argc - 1)
 	{
 		error = false;
 		split = ft_split(argv[(*i)++], ' ');
+		printf("check_valid_commands No.2\n");
 		if (split)
 		{
-			if (!search_path(split[0], environ, filepath))
+			printf("check_valid_commands No.3 split[0]=%s\n",split[0]);
+			if (search_path(split[0], environ, filepath) == NULL)
 				error = true;
+			printf("check_valid_commands No.4 error=%d, filepath=%s\n", error,filepath);
 		}
 		else
 			error = true;
+		printf("check_valid_commands No.5 error=%d\n", error);
 		ft_free_split(split);
 		if (error)
 			return (false);
+		printf("check_valid_commands No.6 error=%d\n", error);
 	}
 	return (true);
 }

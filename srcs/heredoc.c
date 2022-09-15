@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 07:40:39 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 18:10:23 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,26 @@
 #include "libft_str.h"
 #include "get_next_line.h"
 #define SHADOW_FILE "pipex_shadow_file.txt"
+
+t_heredoc	is_heredoc(char **argv)
+{
+	t_heredoc	heredoc;
+
+	if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
+	{
+		heredoc.valid = true;
+		heredoc.valid_backup = true;
+		heredoc.limiter = argv[2];
+	}
+	else
+	{
+		heredoc.valid = false;
+		heredoc.valid_backup = false;
+		heredoc.limiter = NULL;
+	}
+	return (heredoc);
+}
+
 
 static void	child_echo(int fd, char *echo_path, char **argv, char **environ)
 {

@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:47:03 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 19:38:19 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static void	child(char *cmds, int fd_in, int pipe_fd[2])
 	char		**argv;
 	char		filepath[PATH_MAX + 1];
 	extern char	**environ;
+	int		result[2];
 
 	printf("pipex child No.1\n");
 	argv = ft_split(cmds, ' ');
@@ -29,9 +30,11 @@ static void	child(char *cmds, int fd_in, int pipe_fd[2])
 			printf("pipex child No.2 filepath=%s, argv[0]=%s\n", filepath, argv[0]);
 			close(pipe_fd[PIPE_IN]);
 			close(0);
-			dup2(fd_in, 0);
+			result[0] = dup2(fd_in, 0);
 			close(1);
-			dup2(pipe_fd[PIPE_OUT], 1);
+			result[1] = dup2(pipe_fd[PIPE_OUT], 1);
+			if (result[0] == -1 || result[1] == -1)
+				exit(EXIT_FAILURE);
 			execve(filepath, argv, environ);
 		}
 	}
@@ -104,7 +107,7 @@ t_fdpid	parent(int pid, int	*pipe_fd)
 	}
 	else
 	{
-		fdpid.pid = pid_p;
+		fdpid.pid = pid;
 		fdpid.fd = pipe_fd_p[PIPE_IN];
 
 		//close(pipe_fd[PIPE_OUT]);
@@ -121,59 +124,25 @@ t_fdpid	pipex(char *cmds, int fd_in, t_heredoc heredoc)
 {
 	int		pid;
 	int		pipe_fd[2];
-	int		status;
 	t_fdpid		fdpid;
 
 	fdpid.pid = -1;
-	printf("pipex No.1, fd_in=%d\n",fd_in);
-	if (fd_in == -1 && heredoc.valid == false)
-		return (fdpid);
-	printf("pipex No.2\n");
 	if (pipe(pipe_fd) != 0)
-		kill_process(0, "pipe() error\n");
+		return (fdpid);
 	pid = fork();
-	printf("pipex No.3 pid=%d, cmd=%s\n", pid, cmds);
-	if ((pid) == 0)
+	if (pid == 0)
 	{
-		char *s1;
-		s1 = "pipex No.4\n";
-		write(1,s1, ft_strlen(s1));
-		printf("pipex No.4\n");
-		//if (heredoc.valid)
-			//fd_in = heredoc_input(heredoc);
-		//else
 		if (heredoc.valid == false)
 			child(cmds, fd_in, pipe_fd);
-		printf("pipex No.5\n");
 		exit(0);
 	}
-	else
+	else if (pid > 0)
 	{
-		printf("pipex No.6\n");
 		close(pipe_fd[PIPE_OUT]);
 		if (heredoc.valid)
-		{
 			fdpid = heredoc_input(heredoc);
-			status=1;
-			printf("pipex No.7:%d\n",status);
-			/*
-			while (1)
-			{
-				waitpid(pid, &status, 0);
-				if (WIFEXITED(status) == true)
-					break ;
-			}
-			*/
-		}
 		else 
-		{
 			fdpid = parent(pid, pipe_fd);
-			printf("pipex No.8\n");
-			fdpid.pid = pid;
-		}
-		//fdpid.fd = pipe_fd[PIPE_IN];
-		//fdpid.pid = pid;
 	}
-	printf("pipex No.9 pid=%d, fd=%d\n", pid, fdpid.fd);
 	return (fdpid);
 }
