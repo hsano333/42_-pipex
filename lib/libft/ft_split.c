@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 12:58:17 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:21:44 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:43:56 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,6 @@ char	**ft_split(char const *s, char c)
 		return (p);
 	}
 	cnt = count_c(s, c);
-	printf("\ns=[%s] ,split cnt=%zu\n",s,cnt);
 	p = (char **)malloc(sizeof(char *) * (cnt + 1));
 	if (p == NULL)
 		return (NULL);

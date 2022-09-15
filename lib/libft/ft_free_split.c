@@ -6,11 +6,14 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 09:30:58 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:32:24 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:46:20 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	free_split(char **split)
+#include "libft.h"
+
+
+void	ft_free_split(char **split)
 {
 	size_t	j;
 

@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 09:35:29 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/15 09:47:03 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ static void	child(char *cmds, int fd_in, int pipe_fd[2])
 	char		**argv;
 	char		filepath[PATH_MAX + 1];
 	extern char	**environ;
-	int			i;
 
 	printf("pipex child No.1\n");
 	argv = ft_split(cmds, ' ');
