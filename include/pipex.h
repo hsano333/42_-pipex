@@ -6,17 +6,12 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:43 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 08:59:20 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:15:44 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
-# define PIPE_IN 0
-# define PIPE_OUT 1
-# define READ_MAX 256
-# define WRITE_MAX 256
-# define HEREDOC_WORD "here_doc"
 # include <unistd.h>
 # include <sys/stat.h>
 # include <sys/errno.h>
@@ -40,13 +35,5 @@ typedef struct s_fdpid{
 	int		pid;
 }	t_fdpid;
 
-void		kill_process(int no, char *message);
-char		*search_path(char *exe, char **environ, char *filepath);
-//int			pipex (char *cmds, int fd_in, t_heredoc heredoc);
-//int	pipex(char *cmds, int fd_in, t_heredoc heredoc, int *last_pid);
-//int	pipex(char *cmds, int fd_in, t_heredoc heredoc);
-t_fdpid	pipex(char *cmds, int fd_in, t_heredoc heredoc);
-t_heredoc	is_heredoc(char **argv);
-t_fdpid	heredoc_input(t_heredoc heredoc);
-int	check_valid_commands(int argc, char **argv, int *i);
+int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc);
 #endif

@@ -6,14 +6,15 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/15 18:10:23 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:13:45 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include "pipex_util.h"
+#include "heredoc.h"
 #include "libft_str.h"
 #include "get_next_line.h"
-#define SHADOW_FILE "pipex_shadow_file.txt"
 
 t_heredoc	is_heredoc(char **argv)
 {
@@ -35,22 +36,21 @@ t_heredoc	is_heredoc(char **argv)
 }
 
 
-static void	child_echo(int fd, char *echo_path, char **argv, char **environ)
+static void	child_echo(int fd, char *echo_path, char *line, char **environ)
 {
-	int pid;
-
-
-	/*
-       int k = 0;
-       while (environ[k])
-       {
-               printf(" main environ[%d]=%s\n", k, environ[k]);
-               k++;
-       }
-
-       */
-
-	//printf("path=%s, fd=%d, argv[0]=%s, [1]=%s, [2]=%s,\n",echo_path, fd, argv[0], argv[1], argv[2]);
+	int	pid;
+	char	*argv[6];
+	char	*line2;
+	       
+	line2 = malloc(ft_strlen(line) + 10);
+	if (!line2)
+		kill_process(0, "heredoc malloc() error");
+	ft_strlcpy(line2, "echo ", 10);
+	ft_strlcat(line2, line, ft_strlen(line) + 10);
+	argv[0] = "bash";
+	argv[1] = "-c";
+	argv[2] = line2;
+	argv[3] = NULL;
 	pid = fork();
 	if (pid == 0)
 	{
@@ -59,73 +59,58 @@ static void	child_echo(int fd, char *echo_path, char **argv, char **environ)
 		execve(echo_path, argv, environ);
 		exit(0);
 	}
+	else if (pid == -1)
+		kill_process(0, "heredoc fork() error\n");
 }
 
-static void	heredoc_child(int pipe_fd[2], t_heredoc heredoc)
+static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 {
-	int			fd;
 	char		*line;
-	char		*argv[6];
-	char		echo_path[128];
+	char		echo_path[1024];
 	extern char	**environ;
+	int		result[2];
 
 	if (search_path("bash", environ, echo_path) == NULL)
-		kill_process(0, "Error:don't find echo\n");
-	argv[0] = "bash";
-	argv[1] = "-c";
-	//argv[2] = "echo";
-	argv[3] = NULL;
-	close(pipe_fd[PIPE_IN]);
-	fd = open(SHADOW_FILE, (O_RDWR | O_CREAT), 0664);
-	close(1);
-	dup2(pipe_fd[PIPE_OUT], 1);
+		kill_process(0, "heredoc error:don't find bash\n");
+	result[0] = close(1);
+	result[1] = dup2(pipe_fd[PIPE_OUT], 1);
+	if (result[0] == -1 || result[1] == -1)
+		kill_process(0, "heredoc dup2() error");
 	while (1)
 	{
+		errno = 0;
 		line = get_next_line(0);
-		char *lin2 = malloc(ft_strlen(line) + 10);
-		ft_strlcpy(lin2, "echo ", 10);
-		ft_strlcat(lin2, line, ft_strlen(line) + 10);
-		argv[2] = lin2;
-		if (ft_strncmp(line, heredoc.limiter, ft_strlen(heredoc.limiter)) == 0)
-		{
-			close(fd);
-			close(0);
+		if (errno > 0)
+			kill_process(errno, "get_next_line() error");
+		if (ft_strncmp(line, heredoc->limiter, ft_strlen(heredoc->limiter)) == 0)
 			break ;
-		}
 		else if (line)
-			child_echo(pipe_fd[PIPE_OUT], echo_path, argv, environ);
+			child_echo(pipe_fd[PIPE_OUT], echo_path, line, environ);
 		free(line);
 	}
 }
 
-t_fdpid	heredoc_input(t_heredoc heredoc)
+t_fdpid	heredoc_input(t_heredoc *heredoc)
 {
 	int	pid;
 	int	pipe_fd[2];
-	//int	status;
 	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd) != 0)
-		kill_process(0, "pipe() error\n");
+		kill_process(0, "heredoc pipe() error\n");
 	pid = fork();
 	if (pid == 0)
 	{
+		close(pipe_fd[PIPE_IN]);
 		heredoc_child(pipe_fd, heredoc);
+		close(pipe_fd[PIPE_OUT]);
 		exit(0);
 	}
 	else
 	{
+		close(pipe_fd[PIPE_OUT]);
 		fdpid.pid = pid;
 		fdpid.fd = pipe_fd[PIPE_IN];
-		printf("heredoc No.1 end pid=%d, fd=%d\n",fdpid.pid, fdpid.fd );
-		close(pipe_fd[PIPE_OUT]);
-		//while (1)
-		//{
-			//waitpid(pid, &status, 0);
-			//if (WIFEXITED(status) == true)
-				//break ;
-		//}
 	}
-	printf("heredoc end parend\n");
 	return (fdpid);
 }
