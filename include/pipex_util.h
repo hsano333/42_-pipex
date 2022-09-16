@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:09:22 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:15:43 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:40:50 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # define PIPE_OUT 1
 # define READ_MAX 256
 # define WRITE_MAX 256
+int		check_valid_commands(int argc, char **argv, int *i);
 void	kill_process(int no, char *message);
-int	check_valid_commands(int argc, char **argv, int *i);
 char	*search_path(char *exe, char **environ, char *filepath);
 #endif

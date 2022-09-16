@@ -6,19 +6,19 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 15:28:23 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:14:19 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:35:44 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "pipex_util.h"
 
-static void write_file_heredoc(int fd_in, char *filename)
+static void	write_file_heredoc(int fd_in, char *filename)
 {
-	int			fd_out;
-	int			read_size;
-	char		buf[READ_MAX];
+	int		fd_out;
+	int		read_size;
 	int		option;
+	char	buf[READ_MAX];
 
 	option = O_WRONLY | O_APPEND;
 	fd_out = open(filename, option, 0777);
@@ -28,7 +28,6 @@ static void write_file_heredoc(int fd_in, char *filename)
 		fd_out = open(filename, option, 0777);
 		if (fd_out < 0)
 			kill_process(-1, filename);
-
 	}
 	while (1)
 	{
@@ -42,10 +41,10 @@ static void write_file_heredoc(int fd_in, char *filename)
 
 void	write_file(int fd_in, char *filename, t_heredoc *heredoc)
 {
-	int			fd_out;
-	int			read_size;
-	char		buf[READ_MAX];
+	int		fd_out;
+	int		read_size;
 	int		option;
+	char	buf[READ_MAX];
 
 	if (heredoc->valid_backup)
 	{

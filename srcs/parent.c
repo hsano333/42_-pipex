@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 14:57:10 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:13:58 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:38:11 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 #include "pipex_util.h"
 #include "libft_str.h"
 
-static void parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
+static void	parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
 {
-	size_t	read_size;
+	int		status;
 	char	buf[READ_MAX];
-	int	status;
+	size_t	read_size;
 
 	while (1)
 	{
@@ -33,12 +33,11 @@ static void parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
 	}
 	close(pipe_fd[PIPE_IN]);
 	close(pipe_fd_p[PIPE_OUT]);
-
 }
 
 t_fdpid	parent(int pid, int *pipe_fd)
 {
-	int	pipe_fd_p[2];
+	int		pipe_fd_p[2];
 	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd_p) != 0)
@@ -56,4 +55,3 @@ t_fdpid	parent(int pid, int *pipe_fd)
 	}
 	return (fdpid);
 }
-
