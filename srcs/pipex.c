@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:17:21 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:24:31 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@
 t_fdpid	pipe_main(char *cmds, int fd_in, t_heredoc *heredoc)
 {
 	int		pipe_fd[2];
-	t_fdpid		fdpid;
+	t_fdpid	fdpid;
 
 	fdpid.pid = -1;
 	if (pipe(pipe_fd) != 0)
 		return (fdpid);
 	fdpid.pid = fork();
-	if (fdpid.pid== 0)
+	if (fdpid.pid == 0)
 	{
 		close(pipe_fd[PIPE_IN]);
 		if (heredoc->valid == false)
@@ -40,7 +40,7 @@ t_fdpid	pipe_main(char *cmds, int fd_in, t_heredoc *heredoc)
 		close(pipe_fd[PIPE_OUT]);
 		if (heredoc->valid)
 			fdpid = heredoc_input(heredoc);
-		else 
+		else
 			fdpid = parent(fdpid.pid, pipe_fd);
 	}
 	if (fd_in > 0)
@@ -48,11 +48,12 @@ t_fdpid	pipe_main(char *cmds, int fd_in, t_heredoc *heredoc)
 	return (fdpid);
 }
 
-static void 	main_child(char **cmds, char *output_file, t_fdpid *fdpid, t_heredoc *heredoc)
+static void	main_child(char **cmds, \
+		char *output_file, t_fdpid *fdpid, t_heredoc *heredoc)
 {
-	int			status;
 	int		i;
 	int		fd_i;
+	int		status;
 
 	i = 0;
 	fd_i = 0;
@@ -68,19 +69,19 @@ static void 	main_child(char **cmds, char *output_file, t_fdpid *fdpid, t_heredo
 	}
 	write_file(fdpid[fd_i].fd, output_file, heredoc);
 	i = 0;
-	while(++i <= fd_i)
+	while (++i <= fd_i)
 	{
 		waitpid(fdpid[i].pid, &status, 0);
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0) 
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 			kill_process(-1, "pipex error No.2");
 	}
 }
 
 int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
 {
-	int	pid;
-	int	status;
-	t_fdpid			fdpid[4096];
+	int		pid;
+	int		status;
+	t_fdpid	fdpid[4096];
 
 	fdpid[0].fd = 0;
 	if (heredoc->valid == false)
@@ -96,7 +97,7 @@ int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
 	else if (pid == -1)
 		kill_process(-1, NULL);
 	waitpid(pid, &status, 0);
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) 
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		kill_process(0, NULL);
 	return (0);
 }

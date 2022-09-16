@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:13:45 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:27:13 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,12 @@ t_heredoc	is_heredoc(char **argv)
 	return (heredoc);
 }
 
-
 static void	child_echo(int fd, char *echo_path, char *line, char **environ)
 {
-	int	pid;
+	int		pid;
 	char	*argv[6];
 	char	*line2;
-	       
+
 	line2 = malloc(ft_strlen(line) + 10);
 	if (!line2)
 		kill_process(0, "heredoc malloc() error");
@@ -67,9 +66,11 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 {
 	char		*line;
 	char		echo_path[1024];
+	int			result[2];
+	char		*limiter;
 	extern char	**environ;
-	int		result[2];
 
+	limiter = heredoc->limiter;
 	if (search_path("bash", environ, echo_path) == NULL)
 		kill_process(0, "heredoc error:don't find bash\n");
 	result[0] = close(1);
@@ -82,7 +83,7 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 		line = get_next_line(0);
 		if (errno > 0)
 			kill_process(errno, "get_next_line() error");
-		if (ft_strncmp(line, heredoc->limiter, ft_strlen(heredoc->limiter)) == 0)
+		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
 			break ;
 		else if (line)
 			child_echo(pipe_fd[PIPE_OUT], echo_path, line, environ);
@@ -92,8 +93,8 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 
 t_fdpid	heredoc_input(t_heredoc *heredoc)
 {
-	int	pid;
-	int	pipe_fd[2];
+	int		pid;
+	int		pipe_fd[2];
 	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd) != 0)

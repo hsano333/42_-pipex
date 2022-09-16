@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/16 23:17:44 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:25:06 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	*search_path(char *exe, char **environ, char *filepath)
 			if (!access(filepath, X_OK))
 			{
 				ft_free_split(tmp_paths);
-				return filepath;
+				return (filepath);
 			}
 		}
 		ft_free_split(tmp_paths);
@@ -81,9 +81,9 @@ int	check_valid_commands(int argc, char **argv, int *i)
 	extern char	**environ;
 	char		**split;
 	char		filepath[PATH_MAX + 1];
-	int		error;
+	int			error;
 
-	while(*i < argc - 1)
+	while (*i < argc - 1)
 	{
 		error = false;
 		split = ft_split(argv[(*i)++], ' ');
