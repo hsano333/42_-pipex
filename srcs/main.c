@@ -6,39 +6,52 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 09:31:44 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/13 12:45:57 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:32:38 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include "libft_str.h"
+#include "pipex_util.h"
+#include "heredoc.h"
 #include <sys/wait.h>
+#include <unistd.h>
+
+static int	check_arg(int argc, char **argv, t_heredoc *heredoc)
+{
+	int	i;
+	int	fd_in;
+
+	i = 2;
+	fd_in = 0;
+	if (argc != 5)
+		kill_process(22, "Argument list size is only four\n");
+	if (heredoc->valid == false)
+	{
+		fd_in = open(argv[1], O_RDONLY);
+		if (fd_in < 0)
+			kill_process(-1, argv[1]);
+		close(fd_in);
+	}
+	if (heredoc->valid)
+		i++;
+	if (!check_valid_commands(argc, argv, &i))
+		kill_process(22, argv[i]);
+	return (true);
+}
 
 int	main(int argc, char **argv)
 {
-	int			fd_in;
 	int			i;
-	int			last_pid;
-	char		tee_cmd[1024 + 10];
+	char		*output_file;
 	t_heredoc	heredoc;
 
-	if (argc != 5)
-		kill_process(22, "Argument list size is only four\n");
-	fd_in = open(argv[1], O_RDONLY);
-	if (fd_in < 0)
-		kill_process(0, NULL);
 	heredoc.valid = false;
-	i = 1;
-	if (heredoc.valid)
-		i++;
-	while (++i < (argc - 1))
+	if (check_arg(argc, argv, &heredoc))
 	{
-		fd_in = pipex(argv[i], fd_in, heredoc, &last_pid);
-		heredoc.valid = false;
+		i = 2;
+		output_file = argv[argc - 1];
+		argv[argc - 1] = NULL;
+		pipex(argv[1], output_file, &(argv[i]), &heredoc);
 	}
-	ft_strlcpy(tee_cmd, "tee ", 5);
-	ft_strlcat(tee_cmd, argv[argc - 1], 5 + ft_strlen(argv[argc - 1]));
-	fd_in = pipex(tee_cmd, fd_in, heredoc, &last_pid);
-	close(fd_in);
 	return (0);
 }

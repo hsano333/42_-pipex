@@ -6,14 +6,13 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:28:32 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 00:32:28 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "pipex_util.h"
 #include "heredoc.h"
-#include "libft_str.h"
 #include <sys/wait.h>
 #include <unistd.h>
 
