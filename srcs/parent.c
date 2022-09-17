@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 14:57:10 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 14:21:10 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 15:25:30 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,7 @@ static void	parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
 			write(pipe_fd_p[PIPE_OUT], buf, read_size);
 		else if (read_size <= 0)
 		{
-			printf("waitpid test parent_child No.1, pid=%d\n", pid);
 			waitpid(pid, &status, 0);
-			printf("waitpid test parent_child No.2, pid=%d\n", pid);
 			break ;
 		}
 	}

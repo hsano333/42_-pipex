@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 15:21:32 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 15:25:41 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,7 @@ int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
 	}
 	else if (pid == -1)
 		kill_process(-1, NULL, NULL);
-	printf("waitpid test pipex() No.5, pid=%d\n", pid);
 	waitpid(pid, &status, 0);
-	printf("waitpid test pipex() No.6, pid=%d\n", pid);
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		kill_process(0, NULL, NULL);
 	return (0);
