@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 14:23:22 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 15:21:32 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,9 @@ static void	main_child(char **cmds, \
 	i = fd_i;
 	while (i > 0)
 	{
-		printf("waitpid test main_child No.3, pid=%d\n", fdpid[i].pid);
 		waitpid(fdpid[i].pid, &status, 0);
-		printf("waitpid test main_child No.4, pid=%d\n", fdpid[i].pid);
 		i--;
 	}
-	//if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		//kill_process(-1, "pipex error No.2", NULL);
 }
 
 int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
