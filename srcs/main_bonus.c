@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 03:22:43 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 14:42:29 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	main(int argc, char **argv)
 	char		*output_file;
 	t_heredoc	heredoc;
 
-	heredoc = is_heredoc(argv);
+	heredoc = is_heredoc(argc, argv);
 	if (check_arg(argc, argv, &heredoc))
 	{
 		i = 2;

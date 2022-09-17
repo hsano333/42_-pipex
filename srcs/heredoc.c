@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 03:04:00 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 14:50:35 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,21 @@
 #include "libft_str.h"
 #include "get_next_line.h"
 
-t_heredoc	is_heredoc(char **argv)
+t_heredoc	is_heredoc(int argc, char **argv)
 {
 	t_heredoc	heredoc;
 
-	if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
+	heredoc.valid = false;
+	heredoc.valid_backup = false;
+	heredoc.limiter = NULL;
+
+	if (argc < 5)
+		return (heredoc);
+	else if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
 	{
 		heredoc.valid = true;
 		heredoc.valid_backup = true;
 		heredoc.limiter = argv[2];
-	}
-	else
-	{
-		heredoc.valid = false;
-		heredoc.valid_backup = false;
-		heredoc.limiter = NULL;
 	}
 	return (heredoc);
 }
@@ -80,6 +80,7 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 	while (1)
 	{
 		errno = 0;
+		write(2, "pipex heredoc> ", 15);
 		line = get_next_line(0);
 		if (errno > 0)
 			kill_process(errno, "get_next_line() error", NULL);
