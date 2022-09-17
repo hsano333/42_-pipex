@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 14:50:35 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 15:46:41 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ t_heredoc	is_heredoc(int argc, char **argv)
 	heredoc.valid = false;
 	heredoc.valid_backup = false;
 	heredoc.limiter = NULL;
-
 	if (argc < 5)
 		return (heredoc);
 	else if (ft_strncmp(argv[1], HEREDOC_WORD, ft_strlen(HEREDOC_WORD)) == 0)
@@ -66,17 +65,16 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 {
 	char		*line;
 	char		echo_path[1024];
-	int			result[2];
+	int			r[2];
 	char		*limiter;
 	extern char	**environ;
 
 	limiter = heredoc->limiter;
-	if (search_path("bash", environ, echo_path) == NULL)
-		kill_process(0, "heredoc error:don't find bash\n", NULL);
-	result[0] = close(1);
-	result[1] = dup2(pipe_fd[PIPE_OUT], 1);
-	if (result[0] == -1 || result[1] == -1)
-		kill_process(0, "heredoc dup2() error", NULL);
+	r[0] = close(1);
+	r[1] = dup2(pipe_fd[PIPE_OUT], 1);
+	if (search_path("bash", environ, echo_path) == NULL \
+			|| r[0] == -1 || r[0] == -1)
+		kill_process(0, "heredoc_child() error", NULL);
 	while (1)
 	{
 		errno = 0;
