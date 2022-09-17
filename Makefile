@@ -31,7 +31,7 @@ LFLAGS	:= $(addprefix -L,$(LIBDIRS))
 LIBS	:= $(LIBFT) $(LIBMLX)
 
 CC	:= cc
-CFLAGS	:= -Wall -Wextra -Werror -fsanitize=address
+CFLAGS	:= -Wall -Wextra -Werror
 LDFLAGS := $(IFLAGS) $(LFLAGS) -lft 
 
 all:	$(LIBMLX)	
