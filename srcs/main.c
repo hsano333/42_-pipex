@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 09:31:44 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 03:04:38 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 16:28:07 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ static int	check_arg(int argc, char **argv, t_heredoc *heredoc)
 	}
 	if (heredoc->valid)
 		i++;
-	if (!check_valid_commands(argc, argv, &i))
-		kill_process(22, argv[i], NULL);
 	return (true);
 }
 
