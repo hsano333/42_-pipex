@@ -6,13 +6,21 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 14:58:19 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:39:48 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 05:24:19 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "pipex_util.h"
 #include "libft_str.h"
+
+static void	put_invalid_command(char *cmds)
+{
+	write(2, "zsh: command not found: ", 25);
+	write(2, cmds, ft_strlen(cmds));
+	write(2, "\n", 1);
+	exit(0);
+}
 
 void	child(char *cmds, int fd_in, int pipe_fd[2])
 {
@@ -36,6 +44,8 @@ void	child(char *cmds, int fd_in, int pipe_fd[2])
 			if (execve(filepath, argv, environ) == -1)
 				exit(EXIT_FAILURE);
 		}
+		else
+			put_invalid_command(cmds);
 	}
 	ft_free_split(argv);
 }

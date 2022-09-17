@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/04 06:44:31 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:32:28 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 03:22:43 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,16 @@ static int	check_arg(int argc, char **argv, t_heredoc *heredoc)
 	i = 2;
 	fd_in = 0;
 	if (argc < 5)
-		kill_process(22, "Argument list size is more than three\n");
+		kill_process(22, "Argument list size is more than three\n", NULL);
 	if (heredoc->valid == false)
 	{
 		fd_in = open(argv[1], O_RDONLY);
 		if (fd_in < 0)
-			kill_process(-1, argv[1]);
+			kill_process(-1, argv[1], NULL);
 		close(fd_in);
 	}
 	if (heredoc->valid)
 		i++;
-	if (!check_valid_commands(argc, argv, &i))
-		kill_process(22, argv[i]);
 	return (true);
 }
 

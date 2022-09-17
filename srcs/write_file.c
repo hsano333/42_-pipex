@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 15:28:23 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:35:44 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 03:02:35 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	write_file_heredoc(int fd_in, char *filename)
 		option = O_WRONLY | O_CREAT;
 		fd_out = open(filename, option, 0777);
 		if (fd_out < 0)
-			kill_process(-1, filename);
+			kill_process(-1, filename, NULL);
 	}
 	while (1)
 	{
@@ -54,7 +54,7 @@ void	write_file(int fd_in, char *filename, t_heredoc *heredoc)
 	option = O_WRONLY | O_CREAT | O_TRUNC;
 	fd_out = open(filename, option, 0777);
 	if (fd_out < 0)
-		kill_process(-1, filename);
+		kill_process(-1, filename, NULL);
 	while (1)
 	{
 		read_size = read(fd_in, buf, READ_MAX);

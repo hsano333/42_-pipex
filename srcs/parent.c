@@ -6,13 +6,14 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 14:57:10 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:38:11 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 14:21:10 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "pipex_util.h"
 #include "libft_str.h"
+#include "ft_printf.h"
 
 static void	parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
 {
@@ -27,12 +28,12 @@ static void	parent_child(int pid, int *pipe_fd, int *pipe_fd_p)
 			write(pipe_fd_p[PIPE_OUT], buf, read_size);
 		else if (read_size <= 0)
 		{
+			printf("waitpid test parent_child No.1, pid=%d\n", pid);
 			waitpid(pid, &status, 0);
+			printf("waitpid test parent_child No.2, pid=%d\n", pid);
 			break ;
 		}
 	}
-	close(pipe_fd[PIPE_IN]);
-	close(pipe_fd_p[PIPE_OUT]);
 }
 
 t_fdpid	parent(int pid, int *pipe_fd)
@@ -41,17 +42,21 @@ t_fdpid	parent(int pid, int *pipe_fd)
 	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd_p) != 0)
-		kill_process(0, "parent():pipe() error\n");
+		kill_process(0, "parent():pipe() error\n", NULL);
 	fdpid.pid = fork();
 	if ((fdpid.pid) == 0)
 	{
+		close(pipe_fd_p[PIPE_IN]);
 		parent_child(pid, pipe_fd, pipe_fd_p);
+		close(pipe_fd[PIPE_IN]);
+		close(pipe_fd_p[PIPE_OUT]);
 		exit(0);
 	}
 	else if (fdpid.pid >= 0)
 	{
-		fdpid.fd = pipe_fd_p[PIPE_IN];
+		close(pipe_fd[PIPE_IN]);
 		close(pipe_fd_p[PIPE_OUT]);
+		fdpid.fd = pipe_fd_p[PIPE_IN];
 	}
 	return (fdpid);
 }

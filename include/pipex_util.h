@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:09:22 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:40:50 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 03:02:53 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,6 @@
 # define READ_MAX 256
 # define WRITE_MAX 256
 int		check_valid_commands(int argc, char **argv, int *i);
-void	kill_process(int no, char *message);
+void	kill_process(int no, char *message1, char *message2);
 char	*search_path(char *exe, char **environ, char *filepath);
 #endif

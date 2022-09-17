@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 07:57:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:24:31 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 14:23:22 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,17 +64,20 @@ static void	main_child(char **cmds, \
 		fd_i++;
 		fdpid[fd_i] = pipe_main(cmds[i++], fdpid[fd_i - 1].fd, heredoc);
 		if (fdpid[fd_i].pid == -1)
-			kill_process(-1, "pipex error:fork() error");
+			kill_process(-1, "pipex error:fork() error", NULL);
 		heredoc->valid = false;
 	}
 	write_file(fdpid[fd_i].fd, output_file, heredoc);
-	i = 0;
-	while (++i <= fd_i)
+	i = fd_i;
+	while (i > 0)
 	{
+		printf("waitpid test main_child No.3, pid=%d\n", fdpid[i].pid);
 		waitpid(fdpid[i].pid, &status, 0);
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			kill_process(-1, "pipex error No.2");
+		printf("waitpid test main_child No.4, pid=%d\n", fdpid[i].pid);
+		i--;
 	}
+	//if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		//kill_process(-1, "pipex error No.2", NULL);
 }
 
 int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
@@ -87,7 +90,7 @@ int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
 	if (heredoc->valid == false)
 		fdpid[0].fd = open(input_file, O_RDONLY);
 	if (fdpid[0].fd == -1)
-		kill_process(-1, input_file);
+		kill_process(-1, input_file, NULL);
 	pid = fork();
 	if (pid == 0)
 	{
@@ -95,9 +98,11 @@ int	pipex(char *input_file, char *output_file, char **cmds, t_heredoc *heredoc)
 		exit(0);
 	}
 	else if (pid == -1)
-		kill_process(-1, NULL);
+		kill_process(-1, NULL, NULL);
+	printf("waitpid test pipex() No.5, pid=%d\n", pid);
 	waitpid(pid, &status, 0);
+	printf("waitpid test pipex() No.6, pid=%d\n", pid);
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		kill_process(0, NULL);
+		kill_process(0, NULL, NULL);
 	return (0);
 }

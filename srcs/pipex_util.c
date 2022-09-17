@@ -6,7 +6,7 @@
 /*   By: hsano </var/mail/hsano>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/02 10:11:07 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:25:06 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 05:45:57 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,26 @@
 #include "ft_printf.h"
 #include "libft_str.h"
 
-void	kill_process(int no, char *message)
+void	kill_process(int no, char *message1, char *message2)
 {
+	dup2(2, 1);
 	if (no == 0)
 	{
-		if (message)
-			ft_printf("Error:%s\n", message);
+		if (message1 || message2)
+			ft_printf("Error:%s:%s\n", message1, message2);
+		else if (message1)
+			ft_printf("Error:%s\n", message1);
 		ft_printf("end pipex\n");
 		exit(EXIT_FAILURE);
 	}
 	else if (no == -1)
 	{
-		perror(message);
+		perror(message1);
 		exit(EXIT_FAILURE);
 	}
 	errno = no;
-	if (message)
-		ft_printf("\n%s:%s\n", strerror(errno), message);
+	if (message1)
+		ft_printf("\n%s:%s\n", strerror(errno), message1);
 	exit(EXIT_FAILURE);
 }
 
@@ -40,7 +43,7 @@ static char	*concat_pathpath(char *filepath, char *env, char *exe)
 
 	len = ft_strlen(env) + ft_strlen(exe) + 1 + 1;
 	if (len > PATH_MAX + 1)
-		kill_process(22, "Argument is too long\n");
+		kill_process(22, "Argument is too long\n", NULL);
 	ft_strlcpy(filepath, env, ft_strlen(env) + 1);
 	ft_strlcat(filepath, "/", ft_strlen(env) + 2);
 	ft_strlcat(filepath, exe, len);
@@ -86,7 +89,7 @@ int	check_valid_commands(int argc, char **argv, int *i)
 	while (*i < argc - 1)
 	{
 		error = false;
-		split = ft_split(argv[(*i)++], ' ');
+		split = ft_split(argv[*i], ' ');
 		if (split)
 		{
 			if (search_path(split[0], environ, filepath) == NULL)
@@ -97,6 +100,7 @@ int	check_valid_commands(int argc, char **argv, int *i)
 		ft_free_split(split);
 		if (error)
 			return (false);
+		(*i)++;
 	}
 	return (true);
 }

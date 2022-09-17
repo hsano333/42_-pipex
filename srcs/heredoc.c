@@ -6,7 +6,7 @@
 /*   By: hsano <hsano@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/07 17:18:48 by hsano             #+#    #+#             */
-/*   Updated: 2022/09/17 00:27:13 by hsano            ###   ########.fr       */
+/*   Updated: 2022/09/17 03:04:00 by hsano            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	child_echo(int fd, char *echo_path, char *line, char **environ)
 
 	line2 = malloc(ft_strlen(line) + 10);
 	if (!line2)
-		kill_process(0, "heredoc malloc() error");
+		kill_process(0, "heredoc malloc() error", NULL);
 	ft_strlcpy(line2, "echo ", 10);
 	ft_strlcat(line2, line, ft_strlen(line) + 10);
 	argv[0] = "bash";
@@ -59,7 +59,7 @@ static void	child_echo(int fd, char *echo_path, char *line, char **environ)
 		exit(0);
 	}
 	else if (pid == -1)
-		kill_process(0, "heredoc fork() error\n");
+		kill_process(0, "heredoc fork() error\n", NULL);
 }
 
 static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
@@ -72,17 +72,17 @@ static void	heredoc_child(int pipe_fd[2], t_heredoc *heredoc)
 
 	limiter = heredoc->limiter;
 	if (search_path("bash", environ, echo_path) == NULL)
-		kill_process(0, "heredoc error:don't find bash\n");
+		kill_process(0, "heredoc error:don't find bash\n", NULL);
 	result[0] = close(1);
 	result[1] = dup2(pipe_fd[PIPE_OUT], 1);
 	if (result[0] == -1 || result[1] == -1)
-		kill_process(0, "heredoc dup2() error");
+		kill_process(0, "heredoc dup2() error", NULL);
 	while (1)
 	{
 		errno = 0;
 		line = get_next_line(0);
 		if (errno > 0)
-			kill_process(errno, "get_next_line() error");
+			kill_process(errno, "get_next_line() error", NULL);
 		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
 			break ;
 		else if (line)
@@ -98,7 +98,7 @@ t_fdpid	heredoc_input(t_heredoc *heredoc)
 	t_fdpid	fdpid;
 
 	if (pipe(pipe_fd) != 0)
-		kill_process(0, "heredoc pipe() error\n");
+		kill_process(0, "heredoc pipe() error\n", NULL);
 	pid = fork();
 	if (pid == 0)
 	{
